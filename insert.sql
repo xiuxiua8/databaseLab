@@ -1,0 +1,9 @@
+INSERT INTO S126 VALUES
+('01032005', '刘竟', '男','2003-12-10', 1.75, '东14舍312');
+
+INSERT INTO C126 VALUES
+('CS-03','离散数学', 64, 4, '陈建明');
+
+DELETE
+FROM gaussdb.c126
+WHERE cno = 'CS-03';

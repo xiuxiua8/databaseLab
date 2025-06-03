@@ -1,0 +1,21 @@
+CREATE VIEW Male_18_View AS
+SELECT Sno, SNAME, BDATE, HEIGHT
+FROM S126
+WHERE SEX = '男' AND DORM LIKE '东18舍%';
+
+CREATE VIEW Zhangming_Course_View AS
+SELECT c.Cno, c.CNAME, AVG(sc.GRADE) AS AVG_GRADE
+FROM C126 c
+         JOIN SC126 sc ON c.Cno = sc.Cno
+WHERE c.TEACHER = '张明'
+GROUP BY c.Cno, c.CNAME;
+
+CREATE VIEW AI_Student_View AS
+SELECT s.Sno, s.SNAME, sc.GRADE
+FROM S126 s
+         JOIN SC126 sc ON s.Sno = sc.Sno
+WHERE sc.Cno = 'CS-04';
+
+DROP VIEW IF EXISTS Male_18_View;
+DROP VIEW IF EXISTS zhangming_course_view;
+DROP VIEW IF EXISTS AI_Student_View;
