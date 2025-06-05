@@ -40,10 +40,11 @@ def generate_courses(n=100):
         else:
             prefix = "EE"
             cname = random.choice(ee_prefixes) + random.choice(ee_mids) + random.choice(ee_suffixes)
-
+        '''
         if cname in used_names:
             continue
         used_names.add(cname)
+        '''
 
         cno = f"{prefix}-{len(data)+1:03d}"
         period = random.choice([40, 60, 80, 100])
@@ -57,17 +58,21 @@ def generate_courses(n=100):
 # 选课表
 def generate_sc(students, courses, m=20000):
     data = []
+    used_combinations = set()
     for _ in range(m):
         sno = random.choice(students)
         cno = random.choice(courses)
+        if (sno, cno) in used_combinations:
+            continue
+        used_combinations.add((sno, cno))
         grade = random.choice([None] + [round(random.uniform(40, 100), 1)] * 5)
         data.append([sno, cno, grade])
     df = pd.DataFrame(data, columns=["Sno", "Cno", "GRADE"])
     df.to_csv("resources/sc.csv", index=False)
 
 # 生成
-generate_students(1000)
-generate_courses(100)
+generate_students(5000)
+generate_courses(1000)
 students = pd.read_csv("resources/students.csv")["Sno"].tolist()
 courses = pd.read_csv("resources/courses.csv")["Cno"].tolist()
-generate_sc(students, courses, 20000)
+generate_sc(students, courses, 200000)
