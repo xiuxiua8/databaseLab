@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class InsertData {
     public static void main(String[] args) throws Exception {
@@ -11,7 +12,29 @@ public class InsertData {
 
         insertFromCSV(conn, "../resources/students.csv", "S126", 6);
         insertFromCSV(conn, "../resources/courses.csv", "C126", 5);
-        insertFromCSV(conn, "../resources/sc.csv", "SC126", 3);
+        //insertFromCSV(conn, "../resources/sc.csv", "SC126", 3);
+
+        // 多线程补充 SC126 数据
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        List<Future<?>> futures = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            futures.add(executor.submit(() -> {
+                try (Connection threadConn = DriverManager.getConnection(url, user, password)) {
+                    insertFromCSV(threadConn, "../resources/sc.csv", "SC126", 3);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }));
+        }
+        for (Future<?> future : futures) {
+            future.get();
+        }
+        executor.shutdown();
+
+        // 随机删除 200 行成绩低于 60 分（含 NULL）的选课记录
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute("DELETE FROM SC126 WHERE GRADE < 60 OR GRADE IS NULL LIMIT 200");
+        }
 
         conn.close();
     }
